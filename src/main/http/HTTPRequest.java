@@ -10,7 +10,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
@@ -18,7 +18,9 @@ public abstract class HTTPRequest {
 
   private static HttpClient client = HttpClientBuilder.create().build();
   
-  protected static HTTPResponse sendAndGetResponse(HttpGet request) throws HTTPException {
+  abstract public HTTPResponse sendAndGetResponse() throws HTTPException;
+  
+  protected static HTTPResponse sendAndGetResponse(HttpRequestBase request) throws HTTPException {
     try {
       HttpResponse response = client.execute(request);
       int statusCode = response.getStatusLine().getStatusCode();
@@ -35,6 +37,10 @@ public abstract class HTTPRequest {
           throw new HTTPException("failed to read JSON response", e);
         }
       }
+      
+      else if(contentType.getValue().equals("text/plain"))
+        return new HTTPResponse(statusCode, EntityUtils.toString(response.getEntity()));
+      
       else
         throw new HTTPException("unsupported response type " + contentType.getValue());
       

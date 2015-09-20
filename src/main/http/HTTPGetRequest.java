@@ -8,9 +8,9 @@ public class HTTPGetRequest extends HTTPRequest {
   
   public HTTPGetRequest(String url) {
     request = new HttpGet(url);
-    System.out.println("uri: " + request.getURI());
   }
   
+  @Override
   public HTTPResponse sendAndGetResponse() throws HTTPException {
     return sendAndGetResponse(request);
   }
